@@ -1,18 +1,6 @@
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-export default function Post() {
-  const router = useRouter();
-  const [post, setPost] = useState(null);
-
-  const { id } = router.query;
-
-  useEffect(() => {
-    id && fetch(`https://jsonplaceholder.typicode.com/posts/${id}`)
-      .then(res => res.json())
-      .then(data => setPost(data));
-  }, [id, setPost]);
-
+export default function Post({ post }) {
   return (
     <div className="container">
       {post?.id ? (
@@ -48,4 +36,25 @@ export default function Post() {
       `}</style>
     </div>
   )
+}
+
+export async function getStaticPaths() {
+  const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+  const data = await response.json();
+
+  return {
+    paths: data.map(({ id }) => ({ params: { id: `${id}` } })),
+    fallback: false,
+  };
+}
+
+export async function getStaticProps({ params: { id }}) {
+  const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`);
+  const data = await response.json();
+
+  return {
+    props: {
+      post: data,
+    },
+  };
 }

@@ -1,15 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
 
-export default function Posts() {
-  const [posts, setPosts] = useState([]);
-
-  useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/posts')
-      .then(res => res.json())
-      .then(data => setPosts(data));
-  }, [setPosts]);
-
+export default function Posts({ posts }) {
   return (
     <div className="container">
       <h1>Best posts so far</h1>
@@ -61,3 +53,14 @@ export default function Posts() {
     </div>
   );
 };
+
+export async function getStaticProps() {
+  const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+  const data = await response.json();
+
+  return {
+    props: {
+      posts: data,
+    },
+  };
+}
